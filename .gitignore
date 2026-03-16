@@ -22,7 +22,7 @@ pids/
 .env.*.local
 
 # Configuration (contains sensitive data)
-coze_oauth_config.json
+#coze_oauth_config.json
 
 # Backups
 backups/

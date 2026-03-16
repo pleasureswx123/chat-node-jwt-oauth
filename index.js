@@ -6,7 +6,7 @@ const path = require("path");
 const { getJWTToken } = require("@coze/api");
 const cors = require('@koa/cors');
 
-const configPath = path.join(__dirname, "coze_oauth_config.json");
+const configPath = path.join(process.cwd(), "coze_oauth_config.json");
 
 // Load configuration file
 function loadConfig() {
@@ -82,7 +82,7 @@ app.use(async (ctx, next) => {
   if (ctx.path.startsWith("/assets/")) {
     try {
       // Point to websites/assets directory for static resources
-      const filePath = path.join(__dirname, "websites", ctx.path);
+      const filePath = path.join(process.cwd(), "websites", ctx.path);
       ctx.type = path.extname(filePath);
       ctx.body = fs.createReadStream(filePath);
     } catch (error) {
@@ -97,7 +97,7 @@ app.use(async (ctx, next) => {
 // Home route
 router.get("/", async (ctx) => {
   try {
-    const templatePath = path.join(__dirname, "websites", "index.html");
+    const templatePath = path.join(process.cwd(), "websites", "index.html");
     const variables = {
       coze_www_base: config.coze_www_base,
       client_type: config.client_type,
@@ -143,7 +143,7 @@ router.get("/callback", async (ctx) => {
     // Render callback page directly with token info
     const expiresStr = timestampToDatetime(oauthToken.expires_in);
     ctx.body = renderTemplate(
-      path.join(__dirname, "websites", "callback.html"),
+      path.join(process.cwd(), "websites", "callback.html"),
       {
         token_type: config.client_type,
         access_token: oauthToken.access_token,
@@ -154,7 +154,7 @@ router.get("/callback", async (ctx) => {
   } catch (error) {
     console.error("Failed to get JWT OAuth token:", error);
     ctx.status = 500;
-    ctx.body = renderTemplate(path.join(__dirname, "websites", "error.html"), {
+    ctx.body = renderTemplate(path.join(process.cwd(), "websites", "error.html"), {
       error: `Failed to get JWT OAuth token: ${error.message}`,
     });
   }
@@ -169,6 +169,7 @@ app.use(router.routes()).use(router.allowedMethods());
 
 // Start server
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Server running on port http://127.0.0.1:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port http://0.0.0.0:${port}`); // 修正日志输出
+  console.log("Current working directory:", process.cwd()); // 增加日志便于排查路径问题
 });
