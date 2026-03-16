@@ -168,7 +168,7 @@ router.get("/login", async (ctx) => {
 app.use(router.routes()).use(router.allowedMethods());
 
 // Start server
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8000;
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port http://0.0.0.0:${port}`); // 修正日志输出
   console.log("Current working directory:", process.cwd()); // 增加日志便于排查路径问题
