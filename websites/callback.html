@@ -290,7 +290,7 @@
         // 初始化页面时设置按钮文本和行为
         document.addEventListener('DOMContentLoaded', function() {
             const refreshTokenEle = document.getElementById('refresh_token');
-            const isJWT = !refreshTokenEle || !refreshTokenEle.textContent.trim();
+            const isJWT = !refreshTokenEle || !refreshTokenEle.getAttribute('data-value').trim();
             if (isJWT) {
                 document.getElementById('refreshBtn').textContent = 'New Token';
                 // 隐藏 refresh token 行
@@ -311,8 +311,8 @@
 
         async function refreshToken() {
             const refreshTokenEle = document.getElementById('refresh_token');
-            const isJWT = !refreshTokenEle || !refreshTokenEle.textContent.trim();
-            
+            const isJWT = !refreshTokenEle || !refreshTokenEle.getAttribute('data-value').trim();
+
             try {
                 let response;
                 if (isJWT) {
@@ -333,24 +333,24 @@
                         body: JSON.stringify({ refresh_token: refreshToken })
                     });
                 }
-                
+
                 if (!response.ok) {
                     throw new Error(isJWT ? 'Failed to get new token' : 'Failed to refresh token');
                 }
 
                 const data = await response.json();
-                
+
                 // 更新页面上的 token
                 const accessTokenEle = document.getElementById('access_token');
                 accessTokenEle.setAttribute('data-value', data.access_token);
                 accessTokenEle.querySelector('.masked-text').textContent = '********************************';
-                
+
                 if (data.refresh_token) {
                     const refreshTokenEle = document.getElementById('refresh_token');
                     refreshTokenEle.setAttribute('data-value', data.refresh_token);
                     refreshTokenEle.querySelector('.masked-text').textContent = '********************************';
                 }
-                
+
                 showMessage(isJWT ? 'New token generated successfully!' : 'Token refreshed successfully!');
             } catch (error) {
                 console.error('Error:', error);
@@ -361,7 +361,7 @@
         function copyToken(elementId) {
             const tokenElement = document.getElementById(elementId);
             const tokenText = tokenElement.getAttribute('data-value');
-            
+
             navigator.clipboard.writeText(tokenText).then(() => {
                 showMessage('Token copied to clipboard!');
             }).catch(err => {
@@ -374,8 +374,8 @@
         async function fetchUserInfo() {
             const accessToken = document.getElementById('access_token').getAttribute('data-value');
             const refreshTokenEle = document.getElementById('refresh_token');
-            const isJWT = !refreshTokenEle || !refreshTokenEle.textContent.trim();
-            
+            const isJWT = !refreshTokenEle || !refreshTokenEle.getAttribute('data-value').trim();
+
             if (isJWT) {
                 return; // JWT 模式不请求用户信息
             }
@@ -388,7 +388,7 @@
                 }
 
                 const userData = await response.json();
-                
+
                 if (!userData.user_id) {
                     return; // 如果没有用户ID，不展示用户信息
                 }
@@ -396,7 +396,7 @@
                 // 创建用户头像和信息元素
                 const userAvatarContainer = document.createElement('div');
                 userAvatarContainer.style.position = 'relative';
-                
+
                 const userAvatar = document.createElement('img');
                 userAvatar.src = userData.avatar_url;
                 userAvatar.alt = 'User Avatar';
@@ -435,7 +435,7 @@
             const realValue = element.getAttribute('data-value');
             const button = element.parentElement.querySelector('.toggle-visibility');
             const isVisible = element.querySelector('.masked-text').textContent !== '********************************';
-            
+
             if (isVisible) {
                 element.querySelector('.masked-text').textContent = '********************************';
                 button.textContent = 'Show';
@@ -446,4 +446,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

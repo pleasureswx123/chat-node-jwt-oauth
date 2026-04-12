@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    /* 加载提示样式 */
+    #loading-overlay {
+      display: none;
+    }
+
+    #loading-overlay.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
+<script>
+  const memberId = document.cookie.split('; ').find(row => row.startsWith('avatarImageUrl='))?.split('=')[1]?.trim() || '';
+  console.log(1222, memberId);
+  async function fetchToken() {
+    const response = await fetch('https://sd6rq7nhgrokt7kpcrjfg.apigateway-cn-beijing.volceapi.com/callback', {
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    });
+    if (!response.ok) {
+      throw new Error(`获取 token 失败: ${response.status}`);
+    }
+    const data = await response.json();
+    if (!data.access_token) {
+      throw new Error('返回的数据中没有 access_token');
+    }
+    return data.access_token;
+  }
+  async function initChatSDK() {
+    try {
+      const initialToken = await fetchToken();
+      const client = new CozeWebSDK.WebChatClient({
+        config: {
+          type: 'bot',
+          bot_id: '7618132451860742196'
+        },
+        auth: {
+          type: 'token',
+          token: initialToken,
+          onRefreshToken: fetchToken
+        },
+        userInfo: {
+          id: 'jwt_oauth_user',
+          url: 'https://service-img.tos-cn-beijing.volces.com/logo.png',
+          nickname: 'User'
+        },
+        ui: {
+          base: {
+            icon: 'https://service-img.tos-cn-beijing.volces.com/logo.png',
+            layout: 'pc',
+            lang: 'zh-CN',
+            zIndex: 3000
+          },
+          header: {
+            isShow: true,
+            isNeedClose: true,
+          },
+          asstBtn: {
+            isNeed: true
+          },
+          footer: {
+            isShow: false,
+            expressionText: 'Powered by 凡高',
+          },
+          chatBot: {
+            title: '',
+            uploadable: true,
+            width: 600,
+          },
+          conversations: {
+            isNeed: false
+          },
+        },
+      });
+    } catch (error) {
+      console.log("初始化失败");
+    }
+  }
+  initChatSDK();
+</script>
+<style>
+  textarea[data-testid="bot.ide.chat_area.chat_input.textarea"] {
+    border: none!important;
+  }
+</style>
+
+
+</body>
+</html>
