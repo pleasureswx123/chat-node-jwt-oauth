@@ -116,6 +116,7 @@ router.get("/", async (ctx) => {
 // Login route
 router.get("/callback", async (ctx) => {
   try {
+    const sessionName = ctx.query.sessionName || 'jwt_oauth_session';
     // Get JWT OAuth token directly instead of redirecting
     const oauthToken = await getJWTToken({
       baseURL: config.coze_api_base,
@@ -123,8 +124,7 @@ router.get("/callback", async (ctx) => {
       aud: new URL(config.coze_api_base).host,
       keyid: config.public_key_id,
       privateKey: config.private_key,
-      // 使用固定的 session name 来确保会话一致性
-      sessionName: 'jwt_oauth_session',
+      sessionName: sessionName,
     });
 
     // Check if it's an AJAX request
