@@ -62,7 +62,7 @@
           const response = await fetch('https://api.coze.cn/v1/variables', {
             method: 'PUT',
             headers: {
-              'Authorization': `Bearer ${token}`,
+              'Authorization': 'Bearer '+token,
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(params)
@@ -82,7 +82,8 @@
       const client = new CozeWebSDK.WebChatClient({
         config: {
           type: 'bot',
-          bot_id: bot_id
+          bot_id: bot_id,
+          isIframe: true,
         },
         auth: {
           type: 'token',

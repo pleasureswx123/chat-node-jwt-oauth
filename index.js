@@ -160,6 +160,40 @@ router.get("/callback", async (ctx) => {
   }
 });
 
+// Update variables route
+router.put("/update-variables", async (ctx) => {
+  try {
+    const { token, params } = ctx.request.body;
+    if (!token || !params) {
+      ctx.status = 400;
+      ctx.body = { error: "Missing token or params in request body" };
+      return;
+    }
+
+    const response = await fetch('https://api.coze.cn/v1/variables', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+
+    if (!response.ok) {
+      throw new Error(`请求失败: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('请求成功:', data);
+    ctx.body = data;
+  } catch (error) {
+    console.error('请求失败:', error);
+    ctx.status = 500;
+    ctx.body = { error: error.message };
+  }
+});
+
+
 router.get("/login", async (ctx) => {
   ctx.redirect("/callback");
 });
